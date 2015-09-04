@@ -11,8 +11,15 @@ describe Connect_Four do
 	let(:col5) {%w{o o o x x x}}
 	let(:col6) {%w{x o o o x o}}
 	let(:col7) {%w{x x x x o o}}
+	let(:blank_board) {[col0, col0, col0, col0, col0, col0, col0]}
 	let(:horiz_board_t) {[col0, col1, col2, col3, col4, col5, col6]}
 	let(:horiz_board_f) {[col0, col1, col2, col3, col4, col5, col7]}
+	let(:vert_board_t) {horiz_board_f}
+	let(:vert_board_f) {horiz_board_t}
+	let(:diag_board_right_t) {[col0, col0, col2, col3, col4, col5, col0]}
+	let(:diag_board_left_t) {[col0, col0, col5, col4, col3, col2, col0]} 
+	let(:diag_board_f) {[col0, col5, col0, col5, col0, col5, col0]}
+
 
 	describe "#new" do
 		it "returns an instance of a connect four game" do
@@ -63,11 +70,11 @@ describe Connect_Four do
 	end
 
 	describe "#select_column" do
-
 		it "allows user to select a column" do
 			allow(connect_four_game).to receive(:gets).and_return(rand(0..5).to_s)
 			expect(connect_four_game.select_column).to be_an_instance_of(Array)
 		end
+
 	end
 
 	describe "#add_piece" do
@@ -83,7 +90,7 @@ describe Connect_Four do
 	end
 
 	describe "#horizontal_win?" do
-		it "return true if there are 4-in-a-row of the same piece horizontally" do
+		it "returns true if there are 4-in-a-row of the same piece horizontally" do
 			connect_four_game.board = horiz_board_t
 			expect(connect_four_game.horizontal_win?).to be true
 		end
@@ -96,58 +103,88 @@ describe Connect_Four do
 	end
 
 	describe "#vertical_win?" do
-		#check horizontal wins
+		it "returns true if there are 4-in-a-row of the same piece vertically" do
+			connect_four_game.board = vert_board_t
+			expect(connect_four_game.vertical_win?).to be true
+		end
+
+		it "returns false if there are no 4-in-a-row of the same piece vertically" do
+			connect_four_game.board = vert_board_f
+			expect(connect_four_game.vertical_win?).to be false
+		end
+
 	end
 
 	describe "#diagonal_win?" do
-		#check for diagonal wins
+
+		it "returns true if there are 4-in-a-row diagonally to the upper-right" do
+			connect_four_game.board = diag_board_right_t
+			expect(connect_four_game.diagonal_win?).to be true
+		end
+
+		it "returns true if there are 4-in-a-row diagonally to the upper-left" do
+			connect_four_game.board = diag_board_left_t
+			expect(connect_four_game.diagonal_win?).to be true
+		end
+
+			it "returns false if there are no diagonal win conditions" do
+			connect_four_game.board = diag_board_f
+			expect(connect_four_game.diagonal_win?).to be false
+		end
+		
+
+
 	end
 
-	describe "#check_win" do 
-		#check for wins
+	describe "#winner?" do 
+		it "returns true on a horizontal_win" do
+			connect_four_game.board = horiz_board_t
+			expect(connect_four_game.winner?).to be true
+		end
+
+
+		it "returns true on a vertical_win" do
+			connect_four_game.board = vert_board_t
+			expect(connect_four_game.winner?).to be true
+		end
+
+		it "returns true on a diagonal win"do
+			connect_four_game.board = diag_board_right_t
+			expect(connect_four_game.winner?).to be true
+		end
+
+
+		it "returns false if there is no winner yet" do
+			connect_four_game.board = diag_board_f
+			expect(connect_four_game.winner?).to be false
+		end
+
 	end
 
 	describe "#valid_move?" do
-		#checks if a move is valid
-	end
+		it "returns true if the player selects a column with vacancies" do
+			connect_four_game.board = horiz_board_t
+			expect(connect_four_game.valid_move?(rand(0..2))).to be true
+		end
 
-	describe "#get_move" do
-		#gets player input for a move
-	end
+		it "returns false if the player selects a column with no vacancies" do
+			connect_four_game.board = horiz_board_t
+			expect(connect_four_game.valid_move?(rand(3..6))).to be false
+		end
 
-	describe "#save_game" do 
-		# saves game
-	end
+		it "returns false if the column is larger than the number of columns on the board" do
+			connect_four_game.board = blank_board
+			expect(connect_four_game.valid_move?(7)).to be false
+		end
 
-	describe "#load_game" do
-		# loads game 
-	end
+		it "returns false if the player enters anything other than a single numerical digit" do
+			connect_four_game.board = blank_board
+			expect(connect_four_game.valid_move?("string")).to be false
+			expect(connect_four_game.valid_move?(['array'])).to be false
+			expect(connect_four_game.valid_move?({:o => 'p'})).to be false	
+		end
 
-	## going to assume 2 players for now
-	#describe "#set_number_of_human_players" do
-	#	it "sets human players to 2" do
-	#		connect_four_game.stub!(:gets)
-	#		allow(connect_four_game.set_number_of_human_players).to receive(:gets){2}
-	#		
-	#	end
-#
-#		it "sets human players to 1" do
-#			connect_four_game.set_number_of_human_players(1)
-#			expect(game.players).to eql 1
-#		end
-#
-#		it "throws error when more than 2 players" do
-#			expect(connect_four_game.set_number_of_human_players(5)).to raise_error(TooManyPlayersError)
-#		end
-#
-#		it "throws error when less than 1 player" do
-#			expect(connect_four_game.set_number_of_human_players(0)).to raise_error(NotEnoughPlayersError)
-#		end
-#
-#		it "rejects invalid input type for number of players" do
-#			expect(connect_four_game.set_number_of_human_players("string")).to raise_error(WrongInputError)
-#		end
-#	end
+	end
 
 end
 

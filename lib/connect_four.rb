@@ -32,7 +32,6 @@ class Connect_Four
 	end
 
 	def horizontal_win?
-		# transpose board
 		helper_board = @board.transpose
 
 		helper_board.each do |row|
@@ -40,6 +39,44 @@ class Connect_Four
 			return true if row.include?("xxxx") || row.include?("oooo")
 		end
 		return false
+	end
+
+	def vertical_win?
+		helper_board = @board
+		helper_board.each do |row|
+			row = row.join("")
+			return true if row.include?("xxxx") || row.include?("oooo")
+		end
+		return false
+	end
+
+	def diagonal_win?
+		diagonal_lower_right_win?(@board) || diagonal_lower_right_win?(@board.reverse)
+	end
+
+	def diagonal_lower_right_win?(helper_board)
+		for i in (0..3)
+			for j in (0..2)
+				first = helper_board[i][j]
+				second = helper_board[i+1][j+1]
+				third = helper_board[i+2][j+2]
+				fourth = helper_board[i+3][j+3]
+				diag_up_left = first + second + third + fourth
+				return true if diag_up_left.include?("xxxx") || diag_up_left.include?("oooo")
+			end
+		end
+		return false
+	end
+
+	def winner?
+		horizontal_win? || vertical_win? || diagonal_win?
+	end
+
+	def valid_move?(column)
+		return false unless column.is_a? Fixnum
+		return false unless (0..6).include?(column)
+		return false unless column_has_vacancy?(@board[column])
+		return true
 	end
 
 end
