@@ -71,6 +71,7 @@ describe Connect_Four do
 
 	describe "#select_column" do
 		it "allows user to select a column" do
+			connect_four_game.board = blank_board
 			allow(connect_four_game).to receive(:gets).and_return(rand(0..5).to_s)
 			expect(connect_four_game.select_column).to be_an_instance_of(Array)
 		end

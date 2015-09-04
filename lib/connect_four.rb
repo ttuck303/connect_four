@@ -1,8 +1,7 @@
 class Connect_Four
-	attr_accessor :players, :board
+	attr_accessor :board
 
 	def initialize
-		@players = 2
 		@board  = self.new_board
 	end
 
@@ -15,9 +14,8 @@ class Connect_Four
 	end
 
 	def select_column
-		col = gets.chomp.to_i
-		#puts "Column #{col} selected..."
-		return @board[col]
+		col = gets.chomp.to_i #TODO BUG the to_i conversion will cast the input to 0 if its not a proper type
+		return @board[col] if valid_move?(col)
 	end
 
 	def column_has_vacancy?(col)
@@ -73,10 +71,7 @@ class Connect_Four
 	end
 
 	def valid_move?(column)
-		return false unless column.is_a? Fixnum
-		return false unless (0..6).include?(column)
-		return false unless column_has_vacancy?(@board[column])
-		return true
+		(column.is_a?(Fixnum)) && (0..6).include?(column) && column_has_vacancy?(@board[column])
 	end
 
 end
