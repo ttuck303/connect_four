@@ -1,8 +1,10 @@
 class Connect_Four
-	attr_accessor :board
+	attr_accessor :board, :active_player
 
 	def initialize
-		@board  = self.new_board
+		@board  = new_board
+		@active_player = 'x'
+		game_loop
 	end
 
 	def new_board
@@ -14,8 +16,10 @@ class Connect_Four
 	end
 
 	def select_column
-		col = gets.chomp.to_i #TODO BUG the to_i conversion will cast the input to 0 if its not a proper type
-		return @board[col] if valid_move?(col)
+		puts "Please select the column for your next piece by entering the column number [0-6]"
+		selection = gets.strip.to_i #TODO BUG the to_i conversion will cast the input to 0 if its not a proper type
+		puts "You selected #{selection}."
+		selection
 	end
 
 	def column_has_vacancy?(col)
@@ -23,15 +27,15 @@ class Connect_Four
 	end
 
 	def add_piece(col, player_sym)
-		col.reverse!
-		idx = col.find_index("_")
-		col[idx] = player_sym
-		col.reverse!
+		helper_column = @board[col]
+		helper_column.reverse!
+		idx = helper_column.find_index("_")
+		helper_column[idx] = player_sym
+		@board[col] = helper_column.reverse!
 	end
 
 	def horizontal_win?
 		helper_board = @board.transpose
-
 		helper_board.each do |row|
 			row = row.join("")
 			return true if row.include?("xxxx") || row.include?("oooo")
@@ -74,4 +78,76 @@ class Connect_Four
 		(column.is_a?(Fixnum)) && (0..6).include?(column) && column_has_vacancy?(@board[column])
 	end
 
+	def draw?
+		@board.each do |row|
+			return false if column_has_vacancy?(row)
+		end
+		return true
+	end
+
+	def get_move
+		selection = select_column
+		if valid_move?(selection)
+			add_piece(selection, @active_player)
+		else
+			puts "Invalid selection, please try again."
+			get_move
+		end
+	end
+
+	def game_over?
+		draw? || winner?
+	end
+
+	def print_board
+		helper_board = @board.transpose
+		helper_board.each do |row|
+			row = row.join(" ")
+			puts row
+		end
+		puts 
+		puts "0 1 2 3 4 5 6   <-(Rows)"
+
+	end
+
+	def switch_active_player
+		if @active_player == 'x'
+			@active_player = 'o'
+		else
+			@active_player = 'x'
+		end
+		puts "Its now #{@active_player}'s turn!"
+	end
+
+	def play_again_prompt
+		puts "Game over."
+		puts "Would you like to play again? [y/n]"
+		choice = gets.strip()
+		Connect_Four.new if choice == 'y'
+		puts "Thanks for playing!"
+	end
+
+	def game_loop
+		puts "Welcome to connect four!"
+		puts "Player #{@active_player} goes first."
+		print_board
+		loop do
+			# get active player's move, make sure it is legal, and enter the piece onto the board
+			get_move
+			# print board
+			print_board
+			# check the board for a win or draw (if so break and declare why)
+			break if game_over?
+			# switch active player (prompt the next player)
+			switch_active_player
+			puts
+			puts
+			puts
+		end
+		draw? ? puts("Draw :|") : puts("Player #{@active_player} wins!")
+		play_again_prompt
+	end
+
 end
+
+g = Connect_Four.new

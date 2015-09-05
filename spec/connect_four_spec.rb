@@ -11,7 +11,9 @@ describe Connect_Four do
 	let(:col5) {%w{o o o x x x}}
 	let(:col6) {%w{x o o o x o}}
 	let(:col7) {%w{x x x x o o}}
+	let(:col8) {%w{y y y y y y}}
 	let(:blank_board) {[col0, col0, col0, col0, col0, col0, col0]}
+	let(:draw_board) {[col8, col8, col8, col8, col8, col8, col8]}
 	let(:horiz_board_t) {[col0, col1, col2, col3, col4, col5, col6]}
 	let(:horiz_board_f) {[col0, col1, col2, col3, col4, col5, col7]}
 	let(:vert_board_t) {horiz_board_f}
@@ -70,10 +72,10 @@ describe Connect_Four do
 	end
 
 	describe "#select_column" do
-		it "allows user to select a column" do
+		it "returns a user-selected column (integer)" do
 			connect_four_game.board = blank_board
 			allow(connect_four_game).to receive(:gets).and_return(rand(0..5).to_s)
-			expect(connect_four_game.select_column).to be_an_instance_of(Array)
+			expect(connect_four_game.select_column).to be_an_instance_of(Fixnum)
 		end
 
 	end
@@ -186,6 +188,46 @@ describe Connect_Four do
 		end
 
 	end
+
+	describe "#draw?" do
+		it "returns true if all the spaces are taken and there is no winner yet" do
+			connect_four_game.board = draw_board
+			expect(connect_four_game.draw?).to be true
+		end
+
+
+		it "returns false if there are empty spaces" do 
+			connect_four_game.board = blank_board
+			expect(connect_four_game.draw?).to be false
+		end
+	end
+
+	describe "#get_move" do 
+		#maybe use context here - when active player is x, place x's, and when active player is o, place o's
+		it "put a new piece in for the active player in the appropriate column"
+	end
+
+	describe "#board_maintenance" do
+		it "will update the board"
+	end
+
+	describe "#print_board" do
+		it "will print out a text representation of the board"
+	end
+
+	describe "#game_over?" do
+		it "will check for game ending conditions"
+	end
+
+	describe "#switch_active_player" do
+		it "will alternate the active player"
+	end
+
+	describe "#play_again_prompt" do
+		it "will ask the player if they would like to play again"
+	end
+
+
 
 end
 
